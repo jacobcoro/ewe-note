@@ -16,9 +16,8 @@ const NotesAppInternal = ({ db }: { db: Database }) => {
   const { selectedRoom, setSelectedRoom } = useContext(NotesAppContext);
 
   const room: Room<Note> | null = db.collections.notes[selectedRoom] ?? null;
-  const store = room?.store ?? null;
 
-  const [ready, setReady] = useState(!!store?.documents);
+  const [ready, setReady] = useState(false);
 
   const registry = db.getRegistryStore();
   const registryStore = useSyncedStore(registry);
@@ -34,29 +33,37 @@ const NotesAppInternal = ({ db }: { db: Database }) => {
     // lookup notes rooms in registry
     if (registryKeys.length === 0) {
       console.log('no notes rooms found, creating default room');
-
-      const defaultNotesRoom = await db.createAndConnectRoom({
-        collectionKey: CollectionKey.notes,
-        alias: defaultNotesRoomAliasKey,
-        name: 'Default Notes Collection',
-        registryStore,
-      });
-      if (defaultNotesRoom) setReady(true);
-      // todo: handle error
+      try {
+        const defaultNotesRoom = await db.createAndConnectRoom({
+          collectionKey: CollectionKey.notes,
+          alias: defaultNotesRoomAliasKey,
+          name: 'Default Notes Collection',
+          registryStore,
+        });
+        if (defaultNotesRoom) setReady(true);
+      } catch (error) {
+        console.log('error creating default notes room', error);
+      }
     } else {
-      const res = await db.connectRoom(
-        selectedRoom,
-        CollectionKey.notes,
-        registryStore
-      );
-      if (res) setReady(true);
-      // todo: handle error
+      console.log('connecting to room', selectedRoom);
+      try {
+        const res = await db.connectRoom(
+          selectedRoom,
+          CollectionKey.notes,
+          registryStore
+        );
+        if (res) setReady(true);
+      } catch (error) {
+        console.log('error connecting to room', error);
+      }
     }
-  }, [db, selectedRoom, userId, setSelectedRoom, registryStore]);
+  }, [db, selectedRoom, userId, setSelectedRoom, room?.connectStatus]);
 
   useEffect(() => {
-    if (!ready) connectOrCreateRoom();
+    if (room && room.connectStatus === 'ok') return setReady(true);
+    else if (!ready) connectOrCreateRoom();
   }, [connectOrCreateRoom, ready]);
+
   if (ready) return <NotesAppDashboard db={db} />;
   return <div>...loading collections</div>;
 };
@@ -83,7 +90,7 @@ const NotesAppDashboard = ({ db }: { db: Database }) => {
 
 const NotesApp = () => {
   const { db } = useContext(StoreContext);
-  if (!db || !db.collections.registry[0]?.store)
+  if (!db || !db.collections.registry[0] || !db.collections.registry[0].store)
     return <div>...loading database</div>;
 
   return (

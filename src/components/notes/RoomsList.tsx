@@ -111,22 +111,21 @@ const RoomsListItem = ({
   const [ready, setReady] = useState(false);
 
   const connectOrCreateRoom = useCallback(async () => {
-    if (room?.connectStatus === 'ok') setReady(true);
-    else
-      try {
-        const res = await db?.connectRoom(
-          roomAlias,
-          CollectionKey.notes,
-          registryStore
-        );
-        console.log({ res });
-        if (res) setReady(true);
-      } catch (error) {
-        console.log('error connecting to room', error);
-      }
+    try {
+      const res = await db?.connectRoom(
+        roomAlias,
+        CollectionKey.notes,
+        registryStore
+      );
+      // console.log({ res });
+      if (res) setReady(true);
+    } catch (error) {
+      console.log('error connecting to room', error);
+    }
   }, [db, roomAlias, registryStore]);
   useEffect(() => {
-    if (!ready) connectOrCreateRoom();
+    if (room?.connectStatus === 'ok') setReady(true);
+    else if (!ready) connectOrCreateRoom();
   }, [connectOrCreateRoom, ready]);
 
   const [roomName, setRoomName] = useState(room?.name ?? '');

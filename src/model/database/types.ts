@@ -38,6 +38,8 @@ export type Collection<T> = {
 
 export interface RoomMetaData {
   roomAlias: string;
+  roomName?: string;
+  roomId?: string;
 }
 
 export type RegistryData = {

@@ -4,7 +4,35 @@ import * as Y from 'yjs';
 import { newEmptyRoom, newMatrixProvider } from '../utils';
 import { initialRegistryStore } from '../collections';
 import { CollectionKey } from '../types';
-import type { IDatabase, Documents, RegistryData } from '../types';
+import type { IDatabase, Documents, RegistryData, Room } from '../types';
+
+type RegistryStore = {
+  documents: Documents<RegistryData>;
+};
+
+async function setRoomNameAndId(
+  _db: IDatabase,
+  room: Room<any>,
+  registryStore: RegistryStore
+) {
+  const roomId = await _db.matrixClient?.getRoomIdForAlias(room.roomAlias);
+  if (roomId?.room_id && _db.matrixClient) {
+    const roomRes = await _db.matrixClient?.getRoomSummary(roomId?.room_id);
+    console.log({ roomRes });
+
+    if (roomRes && roomRes.name) {
+      const roomName = roomRes.name;
+      if (roomName) {
+        room.name = roomName;
+        registryStore.documents[0].notes[room.roomAlias].roomName = room.name;
+      }
+    } else {
+      const room2Res = await _db.matrixClient?.getRooms();
+      console.log({ room2Res });
+    }
+  }
+  registryStore.documents[0].notes[room.roomAlias].roomName = room.name;
+}
 
 /** make sure to query the current collection to make sure the passed room's id and alias are correct.  */
 export function connectRoom<T>(
@@ -12,9 +40,7 @@ export function connectRoom<T>(
   /** full alias including host name :matrix.org */
   roomAlias: string,
   collectionKey: CollectionKey,
-  registryStore?: {
-    documents: Documents<RegistryData>;
-  }
+  registryStore?: RegistryStore
 ) {
   return new Promise<boolean>((resolve, reject) => {
     try {
@@ -48,65 +74,46 @@ export function connectRoom<T>(
       });
 
       room.matrixProvider.onReceivedEvents((events) => {
-        console.log('onReceivedEvents', events);
+        // console.log('onReceivedEvents', events);
       });
       room.matrixProvider.onCanWriteChanged((canWrite) => {
-        console.log('canWrite', canWrite);
+        // console.log('canWrite', canWrite);
         resolve(true);
       });
       // connect or fail callbacks:
       room.matrixProvider.matrixReader?.onEvents((e) => {
-        console.log('onEvents', e);
+        // console.log('onEvents', e);
       });
       room.matrixProvider.onDocumentAvailable((e) => {
-        console.log('onDocumentAvailable', e);
+        // console.log('onDocumentAvailable', e);
         room.doc = doc;
         room.store = store;
 
         // populate registry if it is empty
-        if (!registryConnect && registryStore && !registryStore?.documents[0]) {
+        if (registryStore && !registryStore?.documents[0]) {
           registryStore.documents[0] = initialRegistryStore.documents[0];
         }
 
-        if (
-          !registryConnect &&
-          registryStore &&
-          !registryStore?.documents[0].notes[roomAlias]
-        ) {
-          // register room in registry
-          // could consider moving this to createRoom, problem is createRoom doesn't have access to the registryStore
-          console.log('registering room in registry', roomAlias);
-          registryStore.documents[0][room.collectionKey][roomAlias] = {
-            roomAlias,
-          };
-
-          // TODO: set these in registry.
-          const setRoomNameAndId = async () => {
-            const roomId = await this.matrixClient?.getRoomIdForAlias(
-              room.roomAlias
-            );
-            if (roomId?.room_id && this.matrixClient) {
-              const roomRes = await this.matrixClient?.getRoomSummary(
-                roomId?.room_id
-              );
-              console.log({ roomRes });
-
-              if (roomRes && roomRes.name) {
-                const roomName = roomRes.name;
-                if (roomName) {
-                  room.name = roomName;
-                }
-              } else {
-                const room2Res = await this.matrixClient?.getRooms();
-                console.log({ room2Res });
-              }
-            }
-          };
-          setRoomNameAndId();
+        if (!registryConnect && registryStore) {
+          if (
+            // if room not in registry
+            !registryStore.documents[0].notes[roomAlias]
+          ) {
+            console.log('registering room in registry', roomAlias);
+            registryStore.documents[0][room.collectionKey][roomAlias] = {
+              roomAlias,
+            };
+          }
+          if (!registryStore.documents[0].notes[roomAlias].roomName) {
+            setRoomNameAndId(this, room, registryStore);
+          } else if (!room.name) {
+            room.name = registryStore.documents[0].notes[roomAlias].roomName;
+          }
         }
 
-        if (this.onRoomConnectStatusUpdate)
-          this.onRoomConnectStatusUpdate('ok', room.collectionKey, roomAlias);
+        if (!registryStore?.documents[0].notes[roomAlias])
+          if (this.onRoomConnectStatusUpdate)
+            this.onRoomConnectStatusUpdate('ok', room.collectionKey, roomAlias);
         room.connectStatus = 'ok';
 
         resolve(true);
@@ -125,7 +132,7 @@ export function connectRoom<T>(
       });
 
       room.matrixProvider.initialize().then((result) => {
-        console.log('initialize result', result);
+        // console.log('initialize result', result);
       });
     } catch (error) {
       console.log('connectRoom error', error);

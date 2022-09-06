@@ -2,6 +2,7 @@ import { createContext, FC, PropsWithChildren, useRef, useState } from 'react';
 
 import type { LoginData, ConnectStatus } from './database';
 import { Database } from './';
+import { IDatabase } from './database/types';
 
 export interface StoreContext {
   login: (
@@ -25,13 +26,13 @@ export const StoreContext = createContext<StoreContext>(initialStore);
 export const StoreProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
   const [loggedIn, setLoggedIn] = useState(false);
 
-  const db = useRef<Database>(new Database());
+  const db = useRef<IDatabase>(new Database());
   const userId = useRef<string>('');
   const login = (
     loginData: LoginData,
     setLoginStatus: (status: ConnectStatus) => void
   ) => {
-    console.log({ loginData });
+    // console.log({ loginData });
     const setLoginStatusAndCheckLoggedIn = (status: ConnectStatus) => {
       if (status == 'ok') setLoggedIn(true);
       else setLoggedIn(false);
