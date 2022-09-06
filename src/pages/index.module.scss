@@ -1,0 +1,13 @@
+@use '../styles/_variables' as vars;
+@use '../styles/_mixins' as mixins;
+
+.root {
+  @include mixins.container;
+  h1 {
+    text-align: center;
+    padding: vars.$spacing * 2;
+  }
+  p {
+    padding-top: vars.$spacing * 2;
+  }
+}

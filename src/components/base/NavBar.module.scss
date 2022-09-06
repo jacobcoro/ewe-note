@@ -1,0 +1,38 @@
+@use '../../styles/variables' as vars;
+@use '../../styles/mixins' as mixins;
+
+.root {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  background-color: var(--secondary);
+  z-index: 1000;
+
+  a {
+    color: white;
+    text-decoration: none;
+  }
+
+  nav {
+    @include mixins.container;
+    display: flex;
+    height: vars.$spacing * 6.5;
+    align-items: center;
+  }
+
+  ul {
+    list-style: none;
+    margin-left: auto;
+    display: flex;
+    justify-content: space-between;
+  }
+  li {
+    margin-right: vars.$spacing * 4;
+  }
+}
+.iconButton {
+  @include mixins.icon-button;
+  &:hover {
+    color: white;
+  }
+}

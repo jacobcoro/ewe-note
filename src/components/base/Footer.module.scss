@@ -1,0 +1,14 @@
+@use '../../styles/_variables' as vars;
+@use '../../styles/_mixins' as mixins;
+
+.root {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: white;
+  text-align: end;
+  p {
+    color: black;
+    padding-right: vars.$spacing * 1;
+  }
+}

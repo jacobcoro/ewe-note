@@ -1,0 +1,72 @@
+@use '../../styles/_variables' as vars;
+@use '../../styles/_mixins' as mixins;
+
+.root {
+  display: flex;
+  flex-direction: column;
+  @media screen and (min-width: 780px) {
+    flex-direction: row;
+  }
+  height: 100%;
+  width: 100%;
+}
+
+.notesListSection {
+  position: relative;
+  height: 100%;
+  order: 2;
+  min-width: 300px;
+  width: 100%;
+  @media screen and (min-width: 780px) {
+    width: 300px;
+    order: 1;
+  }
+  font-size: smaller;
+  padding: vars.$spacing * 2;
+}
+
+.editorSection {
+  position: relative;
+  height: 100%;
+  flex-grow: 1;
+  order: 1;
+  width: 100%;
+  @media screen and (min-width: 780px) {
+    width: calc(100% - 300px);
+    order: 2;
+  }
+}
+
+.note {
+  font-size: smaller;
+  cursor: pointer;
+  @include mixins.card;
+  position: relative;
+  margin-top: vars.$spacing * 2;
+  padding-left: vars.$spacing * 1;
+  padding-right: vars.$spacing * 1;
+  height: vars.$spacing * 20;
+  div {
+    // hide the editor's scrollbar
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    &::-webkit-scrollbar-thumb {
+      display: none;
+    }
+  }
+}
+
+.iconButton {
+  @include mixins.icon-button;
+}
+
+.noteButtonRow {
+  z-index: 100;
+  @include mixins.flex-row;
+  justify-content: space-between;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  padding: vars.$spacing * 1;
+}

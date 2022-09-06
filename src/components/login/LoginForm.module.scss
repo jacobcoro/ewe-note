@@ -1,0 +1,31 @@
+@use '../../styles/_variables' as vars;
+@use '../../styles/_mixins' as mixins;
+
+.root {
+  @include mixins.card;
+  padding: vars.$spacing * 2;
+  max-width: 500px;
+  margin: auto;
+
+  form {
+    @include mixins.flex-col;
+  }
+
+  input {
+    color: var(--text);
+    background-color: var(--bg);
+    margin: vars.$spacing * 1;
+    min-width: 220px;
+  }
+  button {
+    @include mixins.button;
+    margin: vars.$spacing * 3;
+    padding: vars.$spacing * 1;
+    min-width: 100px;
+  }
+}
+
+.error {
+  color: var(--error);
+  font-weight: bold;
+}

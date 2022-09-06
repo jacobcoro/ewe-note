@@ -1,0 +1,24 @@
+@import './reset.css';
+@import './color-theme.css';
+
+#app-root {
+  color: var(--text);
+  padding-top: 52px; /* for navbar space */
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background-color: var(--bg);
+  overflow: auto;
+}
+
+input {
+  background-color: var(--bg);
+  background-image: none;
+  border: none;
+  padding: 8px;
+  border-radius: 8px;
+}
+
+a {
+  color: var(--secondary);
+}

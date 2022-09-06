@@ -1,0 +1,10 @@
+@use '../styles/_variables' as vars;
+@use '../styles/_mixins' as mixins;
+
+.root {
+  @include mixins.container;
+  @include mixins.flex-col;
+  h1 {
+    padding: vars.$spacing * 2;
+  }
+}

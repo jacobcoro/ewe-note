@@ -1,0 +1,27 @@
+/* Light Mode */
+html[data-color-mode='light'] {
+  --primary: #f5841f;
+  --secondary: #7a48a8;
+  --text: #000000;
+  --text-light: #3f3f3f;
+  --bg: #e5e5e5;
+  --paper: #f1f1f1;
+  --grey-med: #878686;
+  --error: #ff0000;
+
+  --shadow: 3px 3px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Dark Mode */
+html[data-color-mode='dark'] {
+  --primary: #f39a4d;
+  --secondary: #12aabb;
+  --text: #ffff;
+  --text-light: #bbbbbb;
+  --bg: #171717;
+  --paper: #2c2c2c;
+  --grey-med: #878686;
+  --error: #ef3a3a;
+
+  --shadow: 3px 3px 15px rgba(0, 0, 0, 0.6);
+}

@@ -1,0 +1,42 @@
+@use '../../styles/_variables' as vars;
+@use '../../styles/_mixins' as mixins;
+
+.headerRow {
+  color: var(--grey-med);
+
+  @include mixins.flex-row;
+  justify-content: left;
+  h3 {
+    margin-right: auto;
+  }
+  button {
+    color: var(--grey-med);
+
+    @include mixins.flex-row;
+    h5 {
+      margin-right: vars.$spacing * 1;
+    }
+  }
+}
+
+.roomListItem {
+  color: var(--text);
+}
+
+.newCollectionButton {
+  @include mixins.icon-button;
+}
+.inputRow {
+  @include mixins.flex-row;
+}
+
+.titleRow {
+  button {
+    padding: 0;
+    color: var(--text);
+    @include mixins.flex-row;
+  }
+  h3 {
+    margin-right: vars.$spacing * 1;
+  }
+}

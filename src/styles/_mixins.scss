@@ -1,0 +1,70 @@
+@use './variables' as vars;
+
+@mixin card {
+  border-radius: 16px;
+  background-color: var(--paper);
+  box-shadow: var(--shadow);
+}
+
+@mixin container {
+  max-width: 1080px;
+  padding-left: vars.$spacing * 2;
+  padding-right: vars.$spacing * 2;
+  @media screen and (min-width: 480px) {
+    padding-left: vars.$spacing * 4;
+    padding-right: vars.$spacing * 4;
+  }
+  margin: auto;
+}
+
+@mixin login-form {
+  @include card;
+  text-align: center;
+  width: 500px;
+  margin: auto;
+  margin-top: vars.$spacing * 4;
+  padding: vars.$spacing * 4;
+}
+
+@mixin flex-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin flex-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin button {
+  background-color: var(--primary);
+  color: white;
+  padding: 8 * 1px;
+  padding-left: 8 * 2px;
+  padding-right: 8 * 2px;
+  cursor: pointer;
+
+  &:disabled {
+    background-color: var(--grey-med);
+    cursor: not-allowed;
+  }
+}
+
+@mixin icon-button {
+  background-color: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  color: var(--text);
+  &:hover {
+    color: var(--secondary);
+    transform: scale(1.1);
+  }
+  &:disabled {
+    background-color: transparent;
+    color: var(--grey-med);
+  }
+}
