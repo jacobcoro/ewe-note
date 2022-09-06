@@ -5,10 +5,12 @@ import NotesApp from './pages/NotesApp';
 import NotFound from './pages/NotFound';
 import ThemeProvider from 'components/base/ThemeContext';
 import { StoreProvider } from 'model/storeContext';
+import NavBar from 'components/base/NavBar';
 
 export function App() {
   return (
     <div id="app-root" data-theme="light" className="root">
+      <NavBar />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/notes-app" element={<NotesApp />} />
