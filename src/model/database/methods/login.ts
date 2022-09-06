@@ -7,36 +7,39 @@ import type { LoginData, IDatabase } from '../types';
  *
  * login grabs the rooms from the registry. and rooms each room's metadata - room alias, room id into the db object. Should also save in localhost so that we can skip this step on next load.
  */
-export const login =
-  (_db: IDatabase) => async (loginData: LoginData, callback?: () => void) => {
+export async function login(
+  this: IDatabase,
+  loginData: LoginData,
+  callback?: () => void
+) {
+  try {
+    // console.log({ loginData });
+    this.updateLoginStatus('loading');
+    this.matrixClient = await createMatrixClient(loginData);
+    const registryRoomAlias = await getOrCreateRegistry(
+      this.matrixClient,
+      this
+    );
+    if (!registryRoomAlias)
+      throw new Error('could not get registry room alias');
+
     try {
-      console.log({ loginData });
-      _db.updateLoginStatus('loading');
-      _db.matrixClient = await createMatrixClient(loginData);
-      const registryRoomAlias = await getOrCreateRegistry(
-        _db.matrixClient,
-        _db
+      const connectRegistryResponse = await this.connectRoom(
+        registryRoomAlias,
+        CollectionKey.registry
       );
-      if (!registryRoomAlias)
-        throw new Error('could not get registry room alias');
-
-      try {
-        const connectRegistryResponse = await _db.connectRoom(
-          registryRoomAlias,
-          CollectionKey.registry
-        );
-        // console.log({ connectRegistryResponse });
-        _db.updateLoginStatus('ok');
-      } catch (error) {
-        console.log('connect room failed');
-        console.error(error);
-        return _db.updateLoginStatus('failed');
-      }
-
-      if (callback) callback();
+      // console.log({ connectRegistryResponse });
+      this.updateLoginStatus('ok');
     } catch (error) {
-      console.log('login failed');
+      console.log('connect room failed');
       console.error(error);
-      _db.updateLoginStatus('failed');
+      return this.updateLoginStatus('failed');
     }
-  };
+
+    if (callback) callback();
+  } catch (error) {
+    console.log('login failed');
+    console.error(error);
+    this.updateLoginStatus('failed');
+  }
+}

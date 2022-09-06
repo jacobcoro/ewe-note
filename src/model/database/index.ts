@@ -15,6 +15,7 @@ import type {
   Room,
   Documents,
   CollectionKey,
+  IDatabase,
 } from './types';
 
 import type { Note } from './collections';
@@ -24,21 +25,22 @@ export { CollectionKey } from './types'; // enum exported not as a type
 export { buildRoomAlias };
 export type { Collections, Note, ConnectStatus, LoginData, Room, Documents };
 
-const getCollectionRegistry =
-  (_db: Database) => (collectionKey: CollectionKey) =>
-    _db.collections.registry['0'].store.documents['0'][collectionKey];
+function getCollectionRegistry(this: IDatabase, collectionKey: CollectionKey) {
+  return this.collections.registry['0'].store.documents['0'][collectionKey];
+}
 
-const getRegistryStore = (_db: Database) => () =>
-  _db.collections.registry['0'].store;
+function getRegistryStore(this: IDatabase) {
+  return this.collections.registry['0'].store;
+}
 
-export class Database {
+export class Database implements IDatabase {
   matrixClient: MatrixClient | null = null;
   // todo: callbacks on initialization status change.
 
   loggedIn = false;
   loginStatus: ConnectStatus = 'initial';
 
-  updateLoginStatus = updateLoginStatus(this);
+  updateLoginStatus = updateLoginStatus;
   onLoginStatusUpdate: null | OnLoginStatusUpdate = null;
   onRoomConnectStatusUpdate: null | OnRoomConnectStatusUpdate = null;
 
@@ -51,12 +53,12 @@ export class Database {
     ...collections,
   };
 
-  connectRoom = connectRoom(this);
-  createAndConnectRoom = createAndConnectRoom(this);
-  login = login(this);
+  connectRoom = connectRoom;
+  createAndConnectRoom = createAndConnectRoom;
+  login = login;
 
-  getCollectionRegistry = getCollectionRegistry(this);
-  getRegistryStore = getRegistryStore(this);
+  getCollectionRegistry = getCollectionRegistry;
+  getRegistryStore = getRegistryStore;
   constructor() {
     // todo: if registry is in localStorage, load up each room's store.
   }

@@ -104,10 +104,10 @@ export const getOrCreateRegistry = async (
   _db: IDatabase
 ) => {
   const userId = matrixClient.getUserId();
-  console.log({ userId });
+  // console.log({ userId });
   if (!userId) throw new Error('userId not found');
   const space = await getOrCreateSpace(matrixClient, userId);
-  console.log({ space });
+  // console.log({ space });
   const registryRoomAlias = buildRegistryRoomAlias(userId);
   const registryRoomAliasTruncated = truncateRoomAlias(registryRoomAlias);
   const registryExists = await checkForExistingRoomAlias(
