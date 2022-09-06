@@ -43,7 +43,7 @@ export const createEditor = (
         .markdownUpdated((_, markdown, prevMarkdown) => {
           if (markdown !== prevMarkdown) onChange?.(markdown);
         })
-        .mounted(async (ctx) => {
+        .mounted((ctx) => {
           setEditorReady(true);
         });
     })
