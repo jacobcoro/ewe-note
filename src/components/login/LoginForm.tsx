@@ -1,29 +1,30 @@
-import { LoginData, ConnectStatus } from 'model';
+import { DEV_PASSWORD, DEV_USERNAME, MATRIX_SERVER } from 'config';
+import { LoginData, ConnectStatus } from '@eweser/db';
 import style from './LoginForm.module.scss';
+import { useState } from 'react';
 
+const initialLoginData: LoginData = {
+  baseUrl: MATRIX_SERVER,
+  userId: DEV_USERNAME, // these will be empty in prod. This speeds up dev time
+  password: DEV_PASSWORD,
+};
 export interface Props {
-  handleLogin: () => void;
+  handleLogin: (loginData: LoginData) => void;
   loginStatus: ConnectStatus;
-  loginData: LoginData;
-  setLoginData: (loginData: LoginData) => void;
 }
-
 type FormField = keyof LoginData;
 
-const LoginForm = ({
-  handleLogin,
-  loginStatus,
-  loginData,
-  setLoginData,
-}: Props) => {
+const LoginForm = ({ handleLogin, loginStatus }: Props) => {
+  const [loginData, setLoginData] = useState(initialLoginData);
+
   const handleChange = (field: FormField, value: string) => {
     const loginDataChange = {
       ...loginData,
       [field]: value,
     };
-    // todo: validation
     setLoginData(loginDataChange);
   };
+  const login = () => handleLogin(loginData);
 
   return (
     <div className={style.root}>
@@ -57,7 +58,7 @@ const LoginForm = ({
           <p className={style.error}>Login failed</p>
         )}
 
-        <button disabled={loginStatus === 'loading'} onClick={handleLogin}>
+        <button disabled={loginStatus === 'loading'} onClick={login}>
           Login
         </button>
         <p>

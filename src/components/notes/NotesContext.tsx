@@ -1,78 +1,96 @@
-import { useSyncedStore } from '@syncedstore/react';
-import type { Documents, Note } from 'model';
+import type { Documents, Note } from '@eweser/db';
 
-import { createContext, FC } from 'react';
+import { createContext, FC, useCallback, useContext } from 'react';
+import { CollectionContext } from '@eweser/hooks';
 
 export const initialMarkdown = `### Write a note`;
-export const formatNewNote = (text: string, id: string) => {
-  const newNote: Note = {
-    _ref: id, // todo: use create ref. ref should be something like 'notes.notes-room-alias-1.1'
-    text,
-    _id: id,
-    _created: new Date().getTime(),
-    _updated: new Date().getTime(),
-  };
-  return newNote;
-};
 
 type INotesContext = {
   notes: Documents<Note> | null;
-  handleDelete: (note: Note) => void;
-  createNote: (noteText: string, noteId: string) => void;
-  mostRecentNote: string;
+  // mostRecentNote: string;
+  createNote: (text: string, noteId?: string) => void;
+  updateNote: (text: string, noteId: string) => void;
+  deleteNote: (noteId: string) => void;
 };
 const initialContext: INotesContext = {
   notes: null,
-  handleDelete: () => {},
+  // mostRecentNote: '',
   createNote: () => {},
-  mostRecentNote: '',
+  updateNote: () => {},
+  deleteNote: () => {},
 };
 
 export const NotesContext = createContext(initialContext);
 
 export const NotesProvider: FC<{
   children: any;
-  notesStore: Documents<Note>;
-}> = ({ children, notesStore }) => {
-  const notes = useSyncedStore(notesStore);
-  const handleDelete = (note: Note) => {
-    note._deleted = true;
-    note._ttl = new Date().getTime() + 1000 * 60 * 60 * 24 * 30;
-  };
+}> = ({ children }) => {
+  const { store, newDocument } = useContext(CollectionContext);
 
-  let mostRecentNote = '0';
-  const findMostRecentNote = () => {
-    let lastEdited = 0;
+  const notes: Documents<Note> = store.documents;
+  const deleteNote = useCallback(
+    (docId: string) => {
+      // You can also simply do
+      // delete notes[docId];
 
-    Object.keys(notes).forEach((noteId) => {
-      if (notes[noteId]._updated > lastEdited) {
-        lastEdited = notes[noteId]._updated;
-        mostRecentNote = noteId;
-      }
-    });
-    return mostRecentNote;
-  };
-  const nonDeletedNotes = Object.values(notes).filter(
-    (note) => !note._deleted && note.text
+      // But this will delete the document from the database after 30 days
+      const oneMonth = 1000 * 60 * 60 * 24 * 30;
+      notes[docId]._deleted = true;
+      notes[docId]._ttl = new Date().getTime() + oneMonth;
+    },
+    [notes]
   );
+  // trigger re-render
+  // const [lastUpdated, setLastUpdated] = useState(new Date());
 
-  if (nonDeletedNotes.length > 0) {
-    mostRecentNote = findMostRecentNote();
-  } else {
-    notes[mostRecentNote] = formatNewNote(initialMarkdown, mostRecentNote);
-  }
+  // let mostRecentNote = '0';
+  // const findMostRecentNote = useCallback(() => {
+  //   let lastEdited = 0;
 
-  const createNote = (text: string, id: string) => {
-    notes[id] = formatNewNote(text, id);
+  //   Object.keys(notes).forEach((noteId) => {
+  //     if (notes[noteId]._updated > lastEdited) {
+  //       lastEdited = notes[noteId]._updated;
+  //       mostRecentNote = noteId;
+  //     }
+  //   });
+  //   return mostRecentNote;
+  // }, [notes]);
+
+  // if (Object.values(nonDeletedNotes).length > 0) {
+  //   mostRecentNote = findMostRecentNote();
+  // } else {
+  //   notes[mostRecentNote] = newDocument<NoteBase>(
+  //     { text: initialMarkdown },
+  //     mostRecentNote
+  //   );
+  // }
+
+  const createNote = (text: string, id?: string) => {
+    console.log('createNote', text, id);
+    const newNote = newDocument({ text }, id);
+    notes[newNote._id] = newNote;
   };
+
+  const updateNote = useCallback(
+    (text: string, noteId: string) => {
+      // setLastUpdated(new Date());
+      console.log('updateNote', text, noteId);
+      console.log('note', JSON.parse(JSON.stringify(notes[noteId])));
+      if (!notes[noteId] || notes[noteId]._deleted) return;
+      notes[noteId].text = text;
+      notes[noteId]._updated = new Date().getTime();
+    },
+    [notes]
+  );
 
   return (
     <NotesContext.Provider
       value={{
-        notes: notes,
-        mostRecentNote,
-        handleDelete,
+        notes,
+        // mostRecentNote,
+        deleteNote,
         createNote,
+        updateNote,
       }}
     >
       {children}

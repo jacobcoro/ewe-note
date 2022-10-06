@@ -1,17 +1,16 @@
-import { StoreContext } from 'model/storeContext';
+import { DatabaseContext } from '@eweser/hooks';
 import { useContext, useEffect, useState } from 'react';
 import style from './Footer.module.scss';
 
 const Footer = () => {
-  const { loggedIn, db } = useContext(StoreContext);
+  const { loginStatus, db } = useContext(DatabaseContext);
   const [userId, setUserId] = useState('');
   useEffect(() => {
     const getMe = async () => {
-      const res = await db?.matrixClient?.whoami();
-      if (res) setUserId(res.user_id);
+      setUserId(db?.userId ?? '');
     };
     getMe();
-  }, [loggedIn, db, db?.matrixClient]);
+  }, [loginStatus, db, db?.matrixClient]);
   return (
     <footer className={style.root}>
       {userId ? <p>{`signed in as: ${userId}`}</p> : <p>Not signed in</p>}

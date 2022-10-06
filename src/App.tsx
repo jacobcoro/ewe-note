@@ -1,10 +1,10 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/Login';
-import NotesApp from './pages/NotesApp';
+import Notes from './pages/Notes';
 import NotFound from './pages/NotFound';
 import ThemeProvider from 'components/base/ThemeContext';
-import { StoreProvider } from 'model/storeContext';
+import { DatabaseProvider } from '@eweser/hooks';
 import NavBar from 'components/base/NavBar';
 
 export function App() {
@@ -13,7 +13,7 @@ export function App() {
       <NavBar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/notes-app" element={<NotesApp />} />
+        <Route path="/notes-app" element={<Notes />} />
         <Route path="/login" element={<Login />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
@@ -23,12 +23,12 @@ export function App() {
 
 export function WrappedApp() {
   return (
-    <StoreProvider>
+    <DatabaseProvider>
       <ThemeProvider>
         <BrowserRouter>
           <App />
         </BrowserRouter>
       </ThemeProvider>
-    </StoreProvider>
+    </DatabaseProvider>
   );
 }

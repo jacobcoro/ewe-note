@@ -1,3 +1,4 @@
+import { Note, Room, truncateRoomAlias } from '@eweser/db';
 import { Edit, Trash } from '@styled-icons/fa-solid';
 import Editor from 'components/Editor';
 
@@ -6,21 +7,28 @@ import style from './NotesApp.module.scss';
 import { NotesAppContext } from './NotesAppContext';
 import { initialMarkdown, NotesContext } from './NotesContext';
 
-const NotesList = () => {
-  const { createNote, notes, handleDelete } = useContext(NotesContext);
-  const { setSelectedNoteId } = useContext(NotesAppContext);
+const NotesList = ({ room }: { room: Room<Note> }) => {
+  const { createNote, notes, deleteNote } = useContext(NotesContext);
+  const { db, setSelectedNoteId, setSelectedRoom } =
+    useContext(NotesAppContext);
 
-  const notesLength = notes ? Object.values(notes).length : 0;
   if (!notes) return <div></div>;
+
+  const nonDeletedNotes = Object.fromEntries(
+    Object.values(notes)
+      .filter((note) => !note._deleted && note.text)
+      .map((note) => [note._id, note])
+  );
+
   return (
     <>
       <button
-        onClick={() => createNote(initialMarkdown, notesLength.toString())}
+        onClick={() => createNote(initialMarkdown)}
         className={style.iconButton}
       >
         <Edit size={28} />
       </button>
-      {Object.keys(notes).map((_id) => {
+      {Object.keys(nonDeletedNotes).map((_id) => {
         const note = notes[_id];
         return (
           note.text &&
@@ -28,17 +36,20 @@ const NotesList = () => {
             <div
               className={style.note}
               key={note._id}
-              onClick={() => setSelectedNoteId(_id)}
+              onClick={() => {
+                setSelectedNoteId(_id);
+                setSelectedRoom(db.getRoomAliasKey(room.roomAlias));
+              }}
             >
               <div className={style.noteButtonRow}>
                 <button
-                  onClick={() => handleDelete(note)}
+                  onClick={() => deleteNote(note._id)}
                   className={style.iconButton}
                 >
                   <Trash size={16} />
                 </button>
               </div>
-              <Editor readOnly content={note.text} />{' '}
+              <Editor readOnly noteId={note._id} />{' '}
             </div>
           )
         );

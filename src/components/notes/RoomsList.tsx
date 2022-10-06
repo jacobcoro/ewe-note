@@ -1,22 +1,23 @@
+import { CollectionKey, IDatabase, truncateRoomAlias } from '@eweser/db';
+import { CollectionProvider, DatabaseContext } from '@eweser/hooks';
 import { CaretDown, CaretRight, PlusSquare } from '@styled-icons/fa-solid';
 import { useSyncedStore } from '@syncedstore/react';
-import type { Database } from 'model';
-import { CollectionKey } from 'model';
-import { StoreContext } from 'model/storeContext';
-import { useCallback, useContext, useEffect, useState } from 'react';
+
+import { useContext, useEffect, useState } from 'react';
 import { Dialog } from './Dialog';
 import { NotesAppContext } from './NotesAppContext';
 import { NotesProvider } from './NotesContext';
 import NotesList from './NotesList';
 import styles from './RoomsList.module.scss';
 
-const RoomsList = ({ db }: { db: Database }) => {
+const RoomsList = () => {
+  const { selectedRoom, db } = useContext(NotesAppContext);
+
   const registry = db.getRegistryStore();
   const registryStore = useSyncedStore(registry);
   const roomKeys = Object.keys(registryStore.documents[0].notes);
   registry.documents[0].notes;
 
-  const { selectedRoom } = useContext(NotesAppContext);
   const [modalOpen, setOpen] = useState(false);
   const setModalOpen = (open: boolean) => {
     setOpen(open);
@@ -36,7 +37,7 @@ const RoomsList = ({ db }: { db: Database }) => {
     try {
       const result = await db.createAndConnectRoom({
         collectionKey: CollectionKey.notes,
-        alias: sanitizedAlias,
+        aliasKey: sanitizedAlias,
         name,
         registryStore,
       });
@@ -83,16 +84,43 @@ const RoomsList = ({ db }: { db: Database }) => {
 
       <>
         {roomKeys.map((roomKey) => (
-          <RoomsListItem
+          <CollectionProvider
             key={roomKey}
-            roomAlias={roomKey}
-            isSelectedRoom={selectedRoom === roomKey}
-          />
+            db={db}
+            collectionKey={CollectionKey.notes}
+            aliasKey={truncateRoomAlias(roomKey)}
+          >
+            <RoomsListItem
+              key={roomKey}
+              roomAlias={roomKey}
+              isSelectedRoom={selectedRoom === roomKey}
+            />
+          </CollectionProvider>
         ))}
       </>
     </div>
   );
 };
+
+const RoomsListItemLoading = ({
+  show,
+  setShow,
+}: {
+  show: boolean;
+  setShow: (show: boolean) => void;
+}) => (
+  <>
+    <div className={styles.titleRow}>
+      <span>
+        <h3 style={{ display: 'inline' }}>loading...</h3>
+        <button style={{ display: 'inline' }} onClick={() => setShow(!show)}>
+          {show ? <CaretDown size={16} /> : <CaretRight size={16} />}
+        </button>
+      </span>
+    </div>
+    <hr />
+  </>
+);
 
 const RoomsListItem = ({
   roomAlias,
@@ -101,32 +129,10 @@ const RoomsListItem = ({
   roomAlias: string;
   isSelectedRoom: boolean;
 }) => {
-  const { db, userId } = useContext(StoreContext);
+  const { db } = useContext(DatabaseContext);
   const { setSelectedRoom } = useContext(NotesAppContext);
   const room = db?.collections.notes[roomAlias];
-
-  const registry = db?.getRegistryStore();
-  const registryStore = useSyncedStore(registry);
-
-  const [ready, setReady] = useState(false);
-
-  const connectOrCreateRoom = useCallback(async () => {
-    try {
-      const res = await db?.connectRoom(
-        roomAlias,
-        CollectionKey.notes,
-        registryStore
-      );
-      // console.log({ res });
-      if (res) setReady(true);
-    } catch (error) {
-      console.log('error connecting to room', error);
-    }
-  }, [db, roomAlias, registryStore]);
-  useEffect(() => {
-    if (room?.connectStatus === 'ok') setReady(true);
-    else if (!ready) connectOrCreateRoom();
-  }, [connectOrCreateRoom, ready]);
+  const userId = db?.userId;
 
   const [roomName, setRoomName] = useState(room?.name ?? '');
   useEffect(() => {
@@ -146,31 +152,15 @@ const RoomsListItem = ({
       setRoomName(shortenedAlias);
     }
   }, [room?.name, room?.roomAlias, userId]);
-
+  console.log('aliasKey', db?.getRoomAliasKey(roomAlias));
   const [show, setShow] = useState(isSelectedRoom);
-  if (!room || room.connectStatus !== 'ok')
-    return (
-      <>
-        <div className={styles.titleRow}>
-          <span>
-            <h3 style={{ display: 'inline' }}>loading...</h3>
-            <button
-              style={{ display: 'inline' }}
-              onClick={() => setShow(!show)}
-            >
-              {show ? <CaretDown size={16} /> : <CaretRight size={16} />}
-            </button>
-          </span>
-        </div>
-        <hr />
-      </>
-    );
+  if (!room) return <RoomsListItemLoading show={show} setShow={setShow} />;
   else
     return (
-      <NotesProvider notesStore={room.store.documents}>
+      <NotesProvider>
         <div
           className={styles.titleRow}
-          onClick={() => setSelectedRoom(room.roomAlias)}
+          onClick={() => setSelectedRoom(db.getRoomAliasKey(room.roomAlias))}
         >
           <span>
             <h3 style={{ display: 'inline' }}>{roomName}</h3>
@@ -183,7 +173,7 @@ const RoomsListItem = ({
           </span>
         </div>
         <hr />
-        {show && <NotesList />}
+        {show && <NotesList room={room} />}
       </NotesProvider>
     );
 };
