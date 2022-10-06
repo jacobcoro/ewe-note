@@ -10,6 +10,8 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@eweser/db": "^0.1.9",
+    "@eweser/hooks": "^0.1.9",
     "@milkdown/core": "^6.1.3",
     "@milkdown/plugin-clipboard": "^6.1.3",
     "@milkdown/plugin-cursor": "^6.1.3",
@@ -34,6 +36,7 @@
     "events": "^3.3.0",
     "material-icons": "^1.11.11",
     "matrix-crdt": "^0.2.0",
+    "matrix-js-sdk": "^19.7.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.3.0"
