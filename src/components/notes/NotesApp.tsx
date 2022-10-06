@@ -1,6 +1,6 @@
-import { CollectionKey, Database } from '@eweser/db';
+import { buildRoomAlias, CollectionKey } from '@eweser/db';
 import { CollectionProvider, DatabaseContext } from '@eweser/hooks';
-import { useSyncedStore } from '@syncedstore/react';
+
 import Editor from 'components/Editor';
 
 import { useContext } from 'react';
@@ -13,8 +13,19 @@ import {
 import { NotesProvider } from './NotesContext';
 import RoomsList from './RoomsList';
 
+const MainEditor = ({ selectedRoom }: { selectedRoom: string }) => {
+  const { db, selectedNoteId } = useContext(NotesAppContext);
+  const room = db.collections.notes[buildRoomAlias(selectedRoom, db.userId)];
+  if (!room) return <div>Room not found</div>;
+  return (
+    <NotesProvider>
+      <Editor noteId={selectedNoteId} />
+    </NotesProvider>
+  );
+};
+
 const NotesAppDashboard = () => {
-  const { selectedRoom, selectedNoteId, db } = useContext(NotesAppContext);
+  const { selectedRoom, db } = useContext(NotesAppContext);
 
   const name =
     selectedRoom === defaultNotesRoomAliasKey
@@ -30,9 +41,7 @@ const NotesAppDashboard = () => {
           aliasKey={selectedRoom}
           name={name}
         >
-          <NotesProvider>
-            <Editor noteId={selectedNoteId} />
-          </NotesProvider>
+          <MainEditor selectedRoom={selectedRoom} />
         </CollectionProvider>
       </section>
       <section className={style.notesListSection}>

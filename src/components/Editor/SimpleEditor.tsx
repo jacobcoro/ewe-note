@@ -13,22 +13,15 @@ const SimpleEditor: React.FC<{
   const { notes, updateNote } = useContext(NotesContext);
   const handleUpdate = useCallback(
     (text: string) => {
-      console.log('handleUpdate', text);
       updateNote(text, noteId);
     },
     [noteId, updateNote]
   );
-  if (!notes) return <div>Loading collection...</div>;
-  if (!readOnly) {
-    console.log({ noteId });
-    if (notes[noteId]) console.log(JSON.parse(JSON.stringify(notes[noteId])));
-    else console.log(JSON.parse(JSON.stringify(notes)));
-  }
+  if (!notes) return <div>Loading note...</div>;
+
   const text =
     notes[noteId] && !notes[noteId]._deleted ? notes[noteId].text : '';
-  if (readOnly) return <div>{text}</div>;
-
-  console.log({ text });
+  if (readOnly) return <div style={{ padding: '36px' }}>{text}</div>;
 
   return (
     <textarea

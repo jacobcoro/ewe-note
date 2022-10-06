@@ -1,4 +1,4 @@
-import { Note, Room, truncateRoomAlias } from '@eweser/db';
+import { getUndecoratedRoomAlias, Note, Room } from '@eweser/db';
 import { Edit, Trash } from '@styled-icons/fa-solid';
 import Editor from 'components/Editor';
 
@@ -9,8 +9,7 @@ import { initialMarkdown, NotesContext } from './NotesContext';
 
 const NotesList = ({ room }: { room: Room<Note> }) => {
   const { createNote, notes, deleteNote } = useContext(NotesContext);
-  const { db, setSelectedNoteId, setSelectedRoom } =
-    useContext(NotesAppContext);
+  const { setSelectedNoteId, setSelectedRoom } = useContext(NotesAppContext);
 
   if (!notes) return <div></div>;
 
@@ -37,8 +36,8 @@ const NotesList = ({ room }: { room: Room<Note> }) => {
               className={style.note}
               key={note._id}
               onClick={() => {
+                setSelectedRoom(getUndecoratedRoomAlias(room.roomAlias));
                 setSelectedNoteId(_id);
-                setSelectedRoom(db.getRoomAliasKey(room.roomAlias));
               }}
             >
               <div className={style.noteButtonRow}>

@@ -1,5 +1,9 @@
-import { CollectionKey, IDatabase, truncateRoomAlias } from '@eweser/db';
-import { CollectionProvider, DatabaseContext } from '@eweser/hooks';
+import {
+  aliasKeyValidation,
+  CollectionKey,
+  getUndecoratedRoomAlias,
+} from '@eweser/db';
+import { CollectionProvider } from '@eweser/hooks';
 import { CaretDown, CaretRight, PlusSquare } from '@styled-icons/fa-solid';
 import { useSyncedStore } from '@syncedstore/react';
 
@@ -15,8 +19,7 @@ const RoomsList = () => {
 
   const registry = db.getRegistryStore();
   const registryStore = useSyncedStore(registry);
-  const roomKeys = Object.keys(registryStore.documents[0].notes);
-  registry.documents[0].notes;
+  const roomKeys = Object.keys(registryStore?.documents[0]?.notes ?? []);
 
   const [modalOpen, setOpen] = useState(false);
   const setModalOpen = (open: boolean) => {
@@ -26,6 +29,7 @@ const RoomsList = () => {
   const [newCollectionName, setNewCollectionName] = useState('');
   const [newRoomResult, setNewRoomResult] = useState('');
   const newRoom = async (name: string) => {
+    aliasKeyValidation(name);
     const sanitizedAlias = name
       .trim()
       .toLocaleLowerCase()
@@ -83,20 +87,24 @@ const RoomsList = () => {
       </div>
 
       <>
-        {roomKeys.map((roomKey) => (
-          <CollectionProvider
-            key={roomKey}
-            db={db}
-            collectionKey={CollectionKey.notes}
-            aliasKey={truncateRoomAlias(roomKey)}
-          >
-            <RoomsListItem
+        {roomKeys.map((roomKey) => {
+          const aliasKey = getUndecoratedRoomAlias(roomKey);
+          console.log({ aliasKey });
+          return (
+            <CollectionProvider
               key={roomKey}
-              roomAlias={roomKey}
-              isSelectedRoom={selectedRoom === roomKey}
-            />
-          </CollectionProvider>
-        ))}
+              db={db}
+              collectionKey={CollectionKey.notes}
+              aliasKey={aliasKey}
+            >
+              <RoomsListItem
+                key={roomKey}
+                roomAlias={roomKey}
+                isSelectedRoom={selectedRoom === roomKey}
+              />
+            </CollectionProvider>
+          );
+        })}
       </>
     </div>
   );
@@ -129,10 +137,9 @@ const RoomsListItem = ({
   roomAlias: string;
   isSelectedRoom: boolean;
 }) => {
-  const { db } = useContext(DatabaseContext);
-  const { setSelectedRoom } = useContext(NotesAppContext);
-  const room = db?.collections.notes[roomAlias];
-  const userId = db?.userId;
+  const { db } = useContext(NotesAppContext);
+  const room = db.collections.notes[roomAlias];
+  const userId = db.userId;
 
   const [roomName, setRoomName] = useState(room?.name ?? '');
   useEffect(() => {
@@ -141,18 +148,17 @@ const RoomsListItem = ({
     } else {
       let cleanedAlias =
         (userId
-          ? room?.roomAlias.split(`_${userId}`)[0].slice(1)
+          ? room?.roomAlias.split(`~@`)[0].slice(1)
           : room?.roomAlias.slice(1)) ?? '';
 
       const shortenedAlias =
-        cleanedAlias.length > 30
-          ? cleanedAlias.slice(0, 30) + '...'
+        cleanedAlias.length > 52
+          ? cleanedAlias.slice(0, 52) + '...'
           : cleanedAlias;
 
       setRoomName(shortenedAlias);
     }
   }, [room?.name, room?.roomAlias, userId]);
-  console.log('aliasKey', db?.getRoomAliasKey(roomAlias));
   const [show, setShow] = useState(isSelectedRoom);
   if (!room) return <RoomsListItemLoading show={show} setShow={setShow} />;
   else
@@ -160,7 +166,9 @@ const RoomsListItem = ({
       <NotesProvider>
         <div
           className={styles.titleRow}
-          onClick={() => setSelectedRoom(db.getRoomAliasKey(room.roomAlias))}
+          // onClick={() =>
+          //   setSelectedRoom(getUndecoratedRoomAlias(room.roomAlias))
+          // }
         >
           <span>
             <h3 style={{ display: 'inline' }}>{roomName}</h3>
