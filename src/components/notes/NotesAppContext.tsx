@@ -35,14 +35,12 @@ export const NotesAppProvider: FC<{ children: any; db: Database }> = ({
   );
   const setSelectedRoom = (room: string) => {
     if (room !== selectedRoom) {
-      console.log('setting selected room', room);
       setSelectedRoomState(room);
     }
   };
   const [selectedNoteId, setSelectedNoteIdState] = useState('');
   const setSelectedNoteId = (noteId: string) => {
     if (noteId !== selectedNoteId) {
-      console.log('setting selected NoteId', noteId);
       setSelectedNoteIdState(noteId);
     }
   };

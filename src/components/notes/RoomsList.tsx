@@ -28,17 +28,19 @@ const RoomsList = () => {
   };
   const [newCollectionName, setNewCollectionName] = useState('');
   const [newRoomResult, setNewRoomResult] = useState('');
+  const [newRoomLoading, setNewRoomLoading] = useState(false);
   const newRoom = async (name: string) => {
-    aliasKeyValidation(name);
-    const sanitizedAlias = name
-      .trim()
-      .toLocaleLowerCase()
-      .split('.')
-      .join('')
-      .split(' ')
-      .join('-');
-
     try {
+      setNewRoomLoading(true);
+      aliasKeyValidation(name);
+      const sanitizedAlias = name
+        .trim()
+        .toLocaleLowerCase()
+        .split('.')
+        .join('')
+        .split(' ')
+        .join('-');
+
       const result = await db.createAndConnectRoom({
         collectionKey: CollectionKey.notes,
         aliasKey: sanitizedAlias,
@@ -46,9 +48,10 @@ const RoomsList = () => {
         registryStore,
       });
       if (!result) throw new Error('Failed to create room');
-      setNewRoomResult('Room created ' + result);
+      setModalOpen(false);
     } catch (error: any) {
       setNewRoomResult(error.message);
+      setNewRoomLoading(false);
     }
   };
   return (
@@ -66,7 +69,7 @@ const RoomsList = () => {
             />
             <button
               className={styles.newCollectionButton}
-              disabled={!newCollectionName}
+              disabled={!newCollectionName || newRoomLoading}
               onClick={() => {
                 newRoom(newCollectionName);
               }}

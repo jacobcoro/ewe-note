@@ -57,8 +57,16 @@
   }
 }
 
-.iconButton {
+.trashButton {
   @include mixins.icon-button;
+  margin-left: auto;
+  margin-right: vars.$spacing * 1;
+}
+
+.newNoteButton {
+  @include mixins.icon-button;
+  margin-top: vars.$spacing * 2;
+  margin-bottom: vars.$spacing * 1;
 }
 
 .noteButtonRow {

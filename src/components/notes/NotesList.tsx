@@ -23,7 +23,7 @@ const NotesList = ({ room }: { room: Room<Note> }) => {
     <>
       <button
         onClick={() => createNote(initialMarkdown)}
-        className={style.iconButton}
+        className={style.newNoteButton}
       >
         <Edit size={28} />
       </button>
@@ -43,7 +43,7 @@ const NotesList = ({ room }: { room: Room<Note> }) => {
               <div className={style.noteButtonRow}>
                 <button
                   onClick={() => deleteNote(note._id)}
-                  className={style.iconButton}
+                  className={style.trashButton}
                 >
                   <Trash size={16} />
                 </button>
