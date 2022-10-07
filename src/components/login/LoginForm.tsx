@@ -14,10 +14,28 @@ export interface Props {
 }
 type FormField = keyof LoginData;
 
+const usernameValidation = (username: string) => {
+  if (!username.startsWith('@')) return 'Username must start with @';
+  if (!username.includes(':' || !username.split(':')[1].includes('.')))
+    return 'Username must include a homeserver, e.g ...:homeserver.org';
+  if (username.includes(' ')) return 'Username cannot contain spaces';
+  if (username.includes('~')) return 'Username cannot contain ~';
+  if (username.length < 3) return 'Username must be at least 3 characters';
+  return 'ok';
+};
+
 const LoginForm = ({ handleLogin, loginStatus }: Props) => {
   const [loginData, setLoginData] = useState(initialLoginData);
+  const [validationError, setValidationError] = useState('');
 
   const handleChange = (field: FormField, value: string) => {
+    setValidationError('');
+    if (field === 'userId') {
+      const validation = usernameValidation(value);
+      if (validation !== 'ok') {
+        setValidationError(validation);
+      }
+    }
     const loginDataChange = {
       ...loginData,
       [field]: value,
@@ -53,12 +71,18 @@ const LoginForm = ({ handleLogin, loginStatus }: Props) => {
           onChange={(e) => handleChange('password', e.target.value)}
           value={loginData.password}
         ></input>
+        {validationError !== '' && (
+          <p className={style.error}>{validationError}</p>
+        )}
+
         {loginStatus === 'failed' && (
-          // TODO: show error
           <p className={style.error}>Login failed</p>
         )}
 
-        <button disabled={loginStatus === 'loading'} onClick={login}>
+        <button
+          disabled={loginStatus === 'loading' || validationError !== ''}
+          onClick={login}
+        >
           Login
         </button>
         <p>
