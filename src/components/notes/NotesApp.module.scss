@@ -11,29 +11,42 @@
   width: 100%;
 }
 
-.notesListSection {
-  position: relative;
-  height: 100%;
-  order: 2;
-  min-width: 300px;
+.dragger {
+  cursor: row-resize;
+
+  height: 4px;
+  min-height: 4px;
   width: 100%;
+
+  background-color: var(--text-light);
+  order: 2;
   @media screen and (min-width: 780px) {
-    width: 300px;
+    cursor: col-resize;
+
+    height: 100%;
+    width: 4px;
+  }
+}
+
+.notesListSection {
+  padding: vars.$spacing * 2;
+  height: 100%;
+  min-height: 500px;
+  flex-grow: 1;
+  order: 3;
+  min-width: 300px;
+  @media screen and (min-width: 780px) {
     order: 1;
   }
-  font-size: smaller;
-  padding: vars.$spacing * 2;
 }
 
 .editorSection {
-  position: relative;
+  min-width: 300px;
+  min-height: 500px;
   height: 100%;
-  flex-grow: 1;
   order: 1;
-  width: 100%;
   @media screen and (min-width: 780px) {
-    width: calc(100% - 300px);
-    order: 2;
+    order: 3;
   }
 }
 
