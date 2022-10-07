@@ -41,17 +41,18 @@
 }
 
 .editorSection {
-  min-width: 300px;
+  width: 100%;
   min-height: 500px;
   height: 100%;
   order: 1;
   @media screen and (min-width: 780px) {
+    min-width: 300px;
+    width: 75%;
     order: 3;
   }
 }
 
 .note {
-  font-size: smaller;
   cursor: pointer;
   @include mixins.card;
   position: relative;
@@ -59,6 +60,12 @@
   padding-left: vars.$spacing * 1;
   padding-right: vars.$spacing * 1;
   height: vars.$spacing * 20;
+  h1 {
+    font-size: 24px !important;
+    line-height: 1.5 !important;
+    margin: 0 !important;
+  }
+
   div {
     // hide the editor's scrollbar
     &::-webkit-scrollbar {
