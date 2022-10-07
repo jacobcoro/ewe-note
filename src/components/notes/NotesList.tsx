@@ -48,7 +48,7 @@ const NotesList = ({ room }: { room: Room<Note> }) => {
                   <Trash size={16} />
                 </button>
               </div>
-              <Editor readOnly noteId={note._id} />{' '}
+              <Editor key={note.text} readOnly noteId={note._id} />{' '}
             </div>
           )
         );

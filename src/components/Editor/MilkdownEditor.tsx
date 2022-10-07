@@ -1,7 +1,5 @@
 import { ReactEditor, useEditor } from '@milkdown/react';
 
-import React from 'react';
-
 import { createEditor } from './createEditor';
 type Props = {
   content: string;
@@ -12,10 +10,9 @@ type Props = {
 export type MarkdownEditorRef = { update: (markdown: string) => void };
 
 const MarkdownEditor = ({ content, readOnly, onChange }: Props) => {
-  const [editorReady, setEditorReady] = React.useState(false);
-  const { editor, loading } = useEditor(
-    (root) => createEditor(root, content, readOnly, setEditorReady, onChange),
-    [content, readOnly, setEditorReady, onChange]
+  const { editor } = useEditor(
+    (root) => createEditor(root, content, readOnly, onChange),
+    [content, readOnly, onChange]
   );
   return <ReactEditor editor={editor} />;
 };

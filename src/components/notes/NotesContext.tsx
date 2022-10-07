@@ -30,10 +30,6 @@ export const NotesProvider: FC<{
   const notes: Documents<Note> = store.documents;
   const deleteNote = useCallback(
     (docId: string) => {
-      // You can also simply do
-      // delete notes[docId];
-
-      // But this will delete the document from the database after 30 days
       const oneMonth = 1000 * 60 * 60 * 24 * 30;
       notes[docId]._deleted = true;
       notes[docId]._ttl = new Date().getTime() + oneMonth;
@@ -66,16 +62,12 @@ export const NotesProvider: FC<{
   // }
 
   const createNote = (text: string, id?: string) => {
-    console.log('createNote', text, id);
     const newNote = newDocument({ text }, id);
     notes[newNote._id] = newNote;
   };
 
   const updateNote = useCallback(
     (text: string, noteId: string) => {
-      // setLastUpdated(new Date());
-      console.log('updateNote', text, noteId);
-      console.log('note', JSON.parse(JSON.stringify(notes[noteId])));
       if (!notes[noteId] || notes[noteId]._deleted) return;
       notes[noteId].text = text;
       notes[noteId]._updated = new Date().getTime();

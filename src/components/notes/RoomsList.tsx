@@ -89,7 +89,6 @@ const RoomsList = () => {
       <>
         {roomKeys.map((roomKey) => {
           const aliasKey = getUndecoratedRoomAlias(roomKey);
-          console.log({ aliasKey });
           return (
             <CollectionProvider
               key={roomKey}

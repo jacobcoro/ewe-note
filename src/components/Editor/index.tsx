@@ -3,7 +3,6 @@ import React, { useCallback, useContext } from 'react';
 import styles from './Editor.module.scss';
 import { NotesContext } from 'components/notes/NotesContext';
 import Editor from './MilkdownEditor';
-import SimpleEditor from './SimpleEditor';
 
 export type OnEditorChange = (markdown: string) => void;
 
@@ -30,5 +29,5 @@ const MarkDownEditor: React.FC<{
     </div>
   );
 };
-export default SimpleEditor;
-// export default MarkDownEditor;
+
+export default MarkDownEditor;

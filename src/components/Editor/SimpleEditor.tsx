@@ -6,6 +6,7 @@ const style = {
   color: 'var(--text)',
   backgroundColor: 'var(--bg)',
 };
+/** Can use this when troubleshooting to see if the issue has to do with the markdown editor or something else */
 const SimpleEditor: React.FC<{
   readOnly?: boolean;
   noteId: string;
