@@ -30,7 +30,6 @@ const NotesList = ({ room }: { room: Room<Note> }) => {
       {Object.keys(nonDeletedNotes).map((_id) => {
         const note = notes[_id];
         return (
-          note.text &&
           !note._deleted && (
             <div
               className={style.note}
@@ -48,7 +47,7 @@ const NotesList = ({ room }: { room: Room<Note> }) => {
                   <Trash size={16} />
                 </button>
               </div>
-              <Editor key={note.text} readOnly noteId={note._id} />{' '}
+              <Editor key={note.text} readOnly noteId={note._id} />
             </div>
           )
         );

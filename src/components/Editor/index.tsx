@@ -14,15 +14,14 @@ const MarkDownEditor: React.FC<{
 
   const handleUpdate = useCallback(
     (text: string) => {
-      updateNote(text, noteId);
+      // gets rid of a bug where empty text prevent the preview from showing. Also starts each blank note with a heading
+      updateNote(text === '' ? '#' : text, noteId);
     },
     [noteId, updateNote]
   );
   if (!notes) return <div>Loading note...</div>;
 
-  const text =
-    notes[noteId] && !notes[noteId]._deleted ? notes[noteId].text : '';
-
+  const text = notes[noteId]?.text ? notes[noteId].text : '#';
   return (
     <div className={styles.root}>
       <Editor onChange={handleUpdate} content={text} readOnly={readOnly} />
