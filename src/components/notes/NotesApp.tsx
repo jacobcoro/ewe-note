@@ -19,7 +19,7 @@ const MainEditor = ({ selectedRoom }: { selectedRoom: string }) => {
   if (!room) return <div>Room not found</div>;
   return (
     <NotesProvider>
-      <Editor noteId={selectedNoteId} />
+      <Editor key={selectedNoteId} noteId={selectedNoteId} />
     </NotesProvider>
   );
 };
