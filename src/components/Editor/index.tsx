@@ -6,6 +6,7 @@ import Editor from './MilkdownEditor';
 const debounceTime = 2000;
 export type OnEditorChange = (markdown: string) => void;
 
+/** make sure to rerender this component if the noteId changes. You can do that by adding `key={noteId}` */
 const MarkDownEditor: React.FC<{
   readOnly?: boolean;
   noteId: string;
