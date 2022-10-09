@@ -2,11 +2,9 @@
 
 ## What
 
-EweNote is a note taking app that gives you ownership
-and control over your data.
+EweNote is a note taking app that gives you ownership and control over your data.
 
-It is currently just a proof of concept. Do not store sensitive or
-important data in it.
+It is currently just a proof of concept. Do not store sensitive or important data in it.
 
 ## Why
 
