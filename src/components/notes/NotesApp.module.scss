@@ -36,6 +36,7 @@
   order: 3;
   min-width: 300px;
   @media screen and (min-width: 780px) {
+    width: 25%;
     order: 1;
   }
 }

@@ -28,7 +28,7 @@ const MainEditor = ({ selectedRoom }: { selectedRoom: string }) => {
 const NotesAppDashboard = () => {
   const { selectedRoom, db } = useContext(NotesAppContext);
 
-  const { handleMove, handleStart } = useEditorDragBar();
+  // const { handleMove, handleStart } = useEditorDragBar();
 
   const name =
     selectedRoom === defaultNotesRoomAliasKey
@@ -47,12 +47,12 @@ const NotesAppDashboard = () => {
           <MainEditor selectedRoom={selectedRoom} />
         </CollectionProvider>
       </section>
-      <div
+      {/* <div
         className={style.dragger}
         draggable={true}
         onMouseDown={(e) => handleStart(e as any)}
         onDrag={(e) => handleMove(e)}
-      />
+      /> */}
       <section className={style.notesListSection}>
         <RoomsList />
       </section>
