@@ -5,9 +5,30 @@
   @include mixins.container;
   h1 {
     text-align: center;
-    padding: vars.$spacing * 2;
+    padding: vars.$spacing * 8;
+  }
+  h2 {
+    margin: 0 !important;
+    margin-top: vars.$spacing * 2 !important;
+  }
+  h3 {
+    margin: 0 !important;
+    margin-top: vars.$spacing * 2 !important;
+  }
+  button {
+    margin-left: vars.$spacing * 4;
+    border-radius: 10px;
+    @include mixins.button;
+  }
+  li {
+    align-items: baseline;
+    margin: 0 !important;
+  }
+  ul {
+    margin: 0 !important;
   }
   p {
-    padding-top: vars.$spacing * 2;
+    margin: 0 !important;
+    margin-top: vars.$spacing * 2 !important;
   }
 }

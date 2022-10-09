@@ -13,7 +13,7 @@ const NavBar = () => {
         </button>
         <ul className="links" role="navigation">
           <li>
-            <Link to="/">Home</Link>
+            <Link to="/">About</Link>
           </li>
           <li>
             <Link to="/notes-app">Notes</Link>

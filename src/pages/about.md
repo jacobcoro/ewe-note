@@ -1,18 +1,5 @@
-import MarkDownEditor from 'components/Editor/MilkdownEditor';
-import styles from './index.module.scss';
+# Welcome to EweNote
 
-export default function Home() {
-  return (
-    <div className={styles.root}>
-      <h1>
-        Welcome to EweNote{' '}
-        <a href="login">
-          <button>Get started</button>
-        </a>
-      </h1>{' '}
-      <MarkDownEditor
-        readOnly
-        content={`
 ## What
 
 EweNote is a note taking app that gives you ownership
@@ -53,18 +40,3 @@ This flipping of the ownership dynamic enables some important features:
 EweNote stores your data in your [Matrix](https://matrix.org/) account in 'collections'. Each collection corresponds to a Matrix chat room, all stored under a space called "My Database".
 
 EweNote and any other app you login to in the same way only has access to your app data and the chats you might have in that matrix account while you are using the app. You might consider making a dedicated Matrix account that you don't use for chat. Your Matrix homeserver also has access to your data, but you can self-host or use a homeserver that you trust. You will soon also be able to encrypt your data before it is sent to your homeserver, so that even your homeserver cannot read it.
-
-`}
-      />
-      <p>
-        Please consider contributing to the project on{' '}
-        <a href="https://github.com/jacobcoro/eduvault-matrix-crdt">GitHub</a>.
-      </p>
-      <p> </p>
-      <p>
-        Or contact me through my{' '}
-        <a href="https://jacobcohen-rosenthal.me">website</a>.
-      </p>
-    </div>
-  );
-}

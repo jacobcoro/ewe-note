@@ -12,6 +12,8 @@ const MarkDownEditor: React.FC<{
 }> = ({ noteId, readOnly }) => {
   const { notes, updateNote } = useContext(NotesContext);
 
+  // will need a local value for the note, then set locally on change, then debounce update db, but also change local on detect db version change
+
   const handleUpdate = useCallback(
     (text: string) => {
       // gets rid of a bug where empty text prevent the preview from showing. Also starts each blank note with a heading
