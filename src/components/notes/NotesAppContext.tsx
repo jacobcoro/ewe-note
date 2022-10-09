@@ -1,5 +1,11 @@
-import { CollectionKey, Database } from '@eweser/db';
-import { Dispatch, FC, SetStateAction, useState, createContext } from 'react';
+import {
+  buildRoomAlias,
+  CollectionKey,
+  Database,
+  Documents,
+  Note,
+} from '@eweser/db';
+import { FC, useState, createContext, useCallback, useEffect } from 'react';
 
 type INotesAppContext = {
   selectedRoom: string;
@@ -38,12 +44,16 @@ export const NotesAppProvider: FC<{ children: any; db: Database }> = ({
       setSelectedRoomState(room);
     }
   };
-  const [selectedNoteId, setSelectedNoteIdState] = useState('');
+  const [selectedNoteId, setSelectedNoteIdState] = useState('0');
   const setSelectedNoteId = (noteId: string) => {
     if (noteId !== selectedNoteId) {
       setSelectedNoteIdState(noteId);
     }
   };
+  const noteRoom =
+    db.collections.notes[buildRoomAlias(selectedRoom, db.userId)];
+  const notes = noteRoom?.store?.documents;
+
   return (
     <NotesAppContext.Provider
       value={{

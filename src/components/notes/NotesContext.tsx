@@ -1,7 +1,8 @@
 import type { Documents, Note } from '@eweser/db';
 
-import { createContext, FC, useCallback, useContext } from 'react';
+import { createContext, FC, useCallback, useContext, useEffect } from 'react';
 import { CollectionContext } from '@eweser/hooks';
+import { NotesAppContext } from './NotesAppContext';
 
 export const initialMarkdown = `### Write a note`;
 
@@ -19,13 +20,29 @@ const initialContext: INotesContext = {
   updateNote: () => {},
   deleteNote: () => {},
 };
+const findMostRecentNote = (notes: Documents<Note>) => {
+  let mostRecentNote = '0';
 
+  if (notes) {
+    let lastEdited = 0;
+
+    Object.keys(notes).forEach((noteId) => {
+      if (!notes[noteId]._deleted && notes[noteId]._updated > lastEdited) {
+        lastEdited = notes[noteId]._updated;
+        mostRecentNote = noteId;
+      }
+    });
+  }
+
+  return mostRecentNote;
+};
 export const NotesContext = createContext(initialContext);
 
 export const NotesProvider: FC<{
   children: any;
 }> = ({ children }) => {
   const { store, newDocument } = useContext(CollectionContext);
+  const { setSelectedNoteId } = useContext(NotesAppContext);
 
   const notes: Documents<Note> = store.documents;
   const deleteNote = useCallback(
@@ -36,30 +53,6 @@ export const NotesProvider: FC<{
     },
     [notes]
   );
-  // trigger re-render
-  // const [lastUpdated, setLastUpdated] = useState(new Date());
-
-  // let mostRecentNote = '0';
-  // const findMostRecentNote = useCallback(() => {
-  //   let lastEdited = 0;
-
-  //   Object.keys(notes).forEach((noteId) => {
-  //     if (notes[noteId]._updated > lastEdited) {
-  //       lastEdited = notes[noteId]._updated;
-  //       mostRecentNote = noteId;
-  //     }
-  //   });
-  //   return mostRecentNote;
-  // }, [notes]);
-
-  // if (Object.values(nonDeletedNotes).length > 0) {
-  //   mostRecentNote = findMostRecentNote();
-  // } else {
-  //   notes[mostRecentNote] = newDocument<NoteBase>(
-  //     { text: initialMarkdown },
-  //     mostRecentNote
-  //   );
-  // }
 
   const createNote = (text: string, id?: string) => {
     const newNote = newDocument({ text }, id);
@@ -75,11 +68,14 @@ export const NotesProvider: FC<{
     [notes]
   );
 
+  useEffect(() => {
+    setSelectedNoteId(findMostRecentNote(notes));
+  }, []);
+
   return (
     <NotesContext.Provider
       value={{
         notes,
-        // mostRecentNote,
         deleteNote,
         createNote,
         updateNote,
