@@ -1,11 +1,5 @@
-import {
-  buildRoomAlias,
-  CollectionKey,
-  Database,
-  Documents,
-  Note,
-} from '@eweser/db';
-import { FC, useState, createContext, useCallback, useEffect } from 'react';
+import { CollectionKey, Database } from '@eweser/db';
+import { FC, useState, createContext } from 'react';
 
 type INotesAppContext = {
   selectedRoom: string;
@@ -50,9 +44,6 @@ export const NotesAppProvider: FC<{ children: any; db: Database }> = ({
       setSelectedNoteIdState(noteId);
     }
   };
-  const noteRoom =
-    db.collections.notes[buildRoomAlias(selectedRoom, db.userId)];
-  const notes = noteRoom?.store?.documents;
 
   return (
     <NotesAppContext.Provider
