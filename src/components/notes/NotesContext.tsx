@@ -62,6 +62,7 @@ export const NotesProvider: FC<{
   const updateNote = useCallback(
     (text: string, noteId: string) => {
       if (!notes[noteId] || notes[noteId]._deleted) return;
+      if (notes[noteId].text === text) return;
       notes[noteId].text = text;
       notes[noteId]._updated = new Date().getTime();
     },
