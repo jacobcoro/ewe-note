@@ -18,7 +18,6 @@ const MarkDownEditor: React.FC<{
   noteId: string;
 }> = ({ noteId, readOnly }) => {
   const { notes, updateNote } = useContext(NotesContext);
-  // TODO: check if the editor changes when remote changes.
 
   if (!notes) return <div>Loading note...</div>;
   const text = notes[noteId]?.text ?? '#';
