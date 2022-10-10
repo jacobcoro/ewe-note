@@ -22,7 +22,7 @@ const initialContext: INotesAppContext = {
   db: {} as Database,
 };
 
-export const defaultNotesRoomAliasKey = 'notes--default';
+export const defaultNotesRoomAliasKey = 'default-notes-collection';
 export const defaultCollectionData = {
   collectionKey: CollectionKey.notes,
   aliasKey: defaultNotesRoomAliasKey,
