@@ -22,7 +22,12 @@ const MarkDownEditor: React.FC<{
 
   if (!notes) return <div>Loading note...</div>;
   const text = notes[noteId]?.text ?? '#';
-  const [noteText, setNoteText] = useState(text);
+  const [noteText, setNoteTextState] = useState(text);
+  const setNoteText = (text: string) => {
+    if (text !== noteText) {
+      setNoteTextState(text);
+    }
+  };
   const [typing, setTyping] = useState(false);
 
   const debouncedUpdate = useRef(

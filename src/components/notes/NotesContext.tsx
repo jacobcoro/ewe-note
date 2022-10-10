@@ -41,15 +41,16 @@ export const NotesContext = createContext(initialContext);
 export const NotesProvider: FC<{
   children: any;
 }> = ({ children }) => {
-  const { store, newDocument } = useContext(CollectionContext);
+  const { store, newDocument, updateDocument } = useContext(CollectionContext);
   const { setSelectedNoteId } = useContext(NotesAppContext);
 
   const notes: Documents<Note> = store.documents;
   const deleteNote = useCallback(
-    (docId: string) => {
+    (noteId: string) => {
+      if (!notes[noteId] || notes[noteId]._deleted) return;
       const oneMonth = 1000 * 60 * 60 * 24 * 30;
-      notes[docId]._deleted = true;
-      notes[docId]._ttl = new Date().getTime() + oneMonth;
+      notes[noteId]._deleted = true;
+      notes[noteId]._ttl = new Date().getTime() + oneMonth;
     },
     [notes]
   );
@@ -61,10 +62,7 @@ export const NotesProvider: FC<{
 
   const updateNote = useCallback(
     (text: string, noteId: string) => {
-      if (!notes[noteId] || notes[noteId]._deleted) return;
-      if (notes[noteId].text === text) return;
-      notes[noteId].text = text;
-      notes[noteId]._updated = new Date().getTime();
+      updateDocument<Note>({ text }, noteId);
     },
     [notes]
   );
