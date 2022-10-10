@@ -6,7 +6,7 @@ export default function Home() {
     <div className={styles.root}>
       <h1>
         Welcome to EweNote{' '}
-        <a href="login">
+        <a href="notes-app">
           <button>Get started</button>
         </a>
       </h1>{' '}
