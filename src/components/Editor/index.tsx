@@ -1,4 +1,4 @@
-import React, { useCallback, useContext } from 'react';
+import React, { useCallback, useContext, useEffect } from 'react';
 import { debounce } from 'lodash';
 import styles from './Editor.module.scss';
 import { NotesContext } from 'components/notes/NotesContext';
@@ -25,7 +25,7 @@ const MarkDownEditor: React.FC<{
   ).current;
 
   // unregister debouncer if it hasn't been called yet
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
       debouncedUpdate.cancel();
     };
